@@ -550,7 +550,9 @@ const Navbar = () => {
       }) || [];
       setWishlistCount(validItems.length);
     } catch (error) {
-      console.error('Error fetching wishlist count:', error);
+      if (error?.response?.status !== 401) {
+        console.error('Error fetching wishlist count:', error);
+      }
       setWishlistCount(0);
     }
   };
