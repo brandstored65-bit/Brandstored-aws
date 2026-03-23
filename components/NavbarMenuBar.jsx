@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Menu } from 'lucide-react';
 
 const MAX_ITEMS = 12;
 const SKELETON_ITEMS = Array.from({ length: 8 });
@@ -51,16 +50,15 @@ export default function NavbarMenuBar() {
         >
           <Link
             href="/shop"
-            className="flex items-center gap-2 text-[13px] font-semibold tracking-[0.02em] uppercase text-gray-800 hover:text-orange-500 transition whitespace-nowrap"
+            className="flex items-center gap-2 text-[13px] font-semibold tracking-[0.02em] uppercase text-gray-800 hover:text-gray-600 transition whitespace-nowrap"
           >
-          <Menu size={18} />
           <span>All</span>
           </Link>
           {loading && (
             <div className="flex items-center gap-3">
               {SKELETON_ITEMS.map((_, idx) => (
                 <div key={`skeleton-${idx}`} className="flex items-center flex-shrink-0">
-                  <span className="mx-2 text-gray-200">|</span>
+                  <span className="mx-2 text-gray-400">|</span>
                   <div className="h-4 w-20 rounded-full bg-gray-200 animate-pulse" />
                 </div>
               ))}
@@ -68,10 +66,10 @@ export default function NavbarMenuBar() {
           )}
           {!loading && items.map((item, index) => (
             <div key={`${item.label || item.name || 'menu'}-${index}`} className="flex items-center flex-shrink-0">
-              <span className="mx-2 text-gray-300">|</span>
+              <span className="mx-2 text-gray-400">|</span>
               <Link
                 href={normalizeUrl(item)}
-                className="text-[13px] font-semibold tracking-[0.01em] text-gray-700 hover:text-orange-500 transition whitespace-nowrap"
+                className="text-[13px] font-semibold tracking-[0.01em] text-gray-800 hover:text-gray-600 transition whitespace-nowrap"
               >
                 {item.label || item.name || 'Menu'}
               </Link>

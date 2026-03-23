@@ -5,7 +5,7 @@ export default function QuickFyndCategoryDirectory() {
         <div className="qf-container">
 
           <h2 className="qf-title">
-            Top Categories on <span>QuickFynd.com</span>
+            Top Categories on <span>brandstored.com</span>
           </h2>
 
           <div className="qf-section">

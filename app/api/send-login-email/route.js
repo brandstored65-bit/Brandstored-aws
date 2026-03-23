@@ -27,7 +27,7 @@ export async function POST(req) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'Quickfynd <noreply@quickfynd.com>',
+        from: 'Quickfynd <noreply@brandstored.com>',
         to: email,
         subject: 'Login Alert - Quickfynd',
         html: `
@@ -183,20 +183,20 @@ export async function POST(req) {
                 </div>
 
                 <div class="button-container">
-                  <a href="${process.env.NEXT_PUBLIC_BASE_URL || 'https://quickfynd.com'}/profile" class="button">
+                  <a href="${process.env.NEXT_PUBLIC_BASE_URL || 'https://brandstored.com'}/profile" class="button">
                     View Account Settings
                   </a>
                 </div>
 
                 <p style="color: #64748b; font-size: 15px; text-align: center; margin-top: 30px; line-height: 1.8;">
                   <span style="color: #1e293b; font-weight: 500;">💬 Need help?</span><br>
-                  Contact us at <a href="mailto:support@quickfynd.com" style="color: #f97316; text-decoration: none; font-weight: 600; border-bottom: 2px solid #f97316;">support@quickfynd.com</a>
+                  Contact us at <a href="mailto:support@brandstored.com" style="color: #f97316; text-decoration: none; font-weight: 600; border-bottom: 2px solid #f97316;">support@brandstored.com</a>
                 </p>
               </div>
               <div class="footer">
                 <p><strong>QuickFynd</strong> - Shop smarter, live better</p>
                 <p>© ${new Date().getFullYear()} QuickFynd. All rights reserved.</p>
-                <p style="margin-top: 10px; color: #94a3b8;">This is a security notification from Quickfynd.com</p>
+                <p style="margin-top: 10px; color: #94a3b8;">This is a security notification from brandstored.com</p>
               </div>
             </div>
           </body>

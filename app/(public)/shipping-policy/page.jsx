@@ -9,7 +9,7 @@ export default function ShippingPolicyPage() {
         </h1>
         <p className="text-gray-600 mb-8">
           This Shipping & Delivery Policy explains how orders placed on{" "}
-          <strong>QuickFynd.com</strong>, owned and operated by{" "}
+          <strong>brandstored.com</strong>, owned and operated by{" "}
           <strong>Nilaas</strong>, are processed, shipped, and delivered.
         </p>
 
@@ -75,7 +75,7 @@ export default function ShippingPolicyPage() {
             <p className="text-gray-700">
               Once your order is shipped, tracking details will be shared via{" "}
               <strong>SMS or email</strong>. You can also track your order anytime
-              from the <strong>My Orders</strong> section on QuickFynd.com.
+              from the <strong>My Orders</strong> section on brandstored.com.
             </p>
           </section>
 
@@ -105,7 +105,7 @@ export default function ShippingPolicyPage() {
               <strong>photos or videos</strong>.
             </p>
             <p className="text-gray-700 mt-1">
-              📧 Email: <strong>support@quickfynd.com</strong>
+              📧 Email: <strong>support@brandstored.com</strong>
             </p>
           </section>
 
@@ -167,10 +167,10 @@ export default function ShippingPolicyPage() {
               <strong>Business Name:</strong> Nilaas
             </p>
             <p className="text-gray-700">
-              <strong>Website:</strong> https://www.quickfynd.com
+              <strong>Website:</strong> https://www.brandstored.com
             </p>
             <p className="text-gray-700">
-              <strong>Email:</strong> support@quickfynd.com
+              <strong>Email:</strong> support@brandstored.com
             </p>
             <p className="text-gray-700">
               <strong>Customer Support:</strong> +91 7592875212

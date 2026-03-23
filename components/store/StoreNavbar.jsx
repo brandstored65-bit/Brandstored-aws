@@ -5,7 +5,7 @@ import Link from "next/link"
 import Image from "next/image";
 import { useState } from "react";
 import { LogOut } from "lucide-react";
-import Logo from "../../assets/Asset11.png";
+import Logo from "../../assets/logo/logo3.png";
 import { useAuth } from "@/lib/useAuth";
 import { signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase";

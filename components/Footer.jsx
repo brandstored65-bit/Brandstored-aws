@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
-import Logo from "../assets/logo/logo2.png";
+import Logo from "../assets/logo/logo3.png";
 
 const Footer = () => {
 
@@ -85,8 +85,8 @@ const Footer = () => {
                         <div className="space-y-3 mb-6">
                             <div className="flex items-center gap-2 text-sm">
                                 <MailIcon />
-                                <a href="mailto:support@QuickFynd.com" className="text-slate-400 hover:text-white transition">
-                                    support@QuickFynd.com
+                                <a href="mailto:support@brandstored.com" className="text-slate-400 hover:text-white transition">
+                                    support@brandstored.com
                                 </a>
                             </div>
                             <div className="flex items-center gap-2 text-sm">
@@ -133,7 +133,7 @@ const Footer = () => {
                             ))}
                         </div>
                     <p className="text-sm text-slate-500 text-center w-full">
-  © {new Date().getFullYear()} QuickFynd — Powered by Nilaas. All rights reserved.
+  © {new Date().getFullYear()} QuickFynd. All rights reserved.
 </p>
 
                     </div>

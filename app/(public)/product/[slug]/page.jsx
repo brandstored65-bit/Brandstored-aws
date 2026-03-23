@@ -175,7 +175,7 @@ export default function ProductBySlug() {
 
     return (
         <div className="w-full">
-            <div className="max-w-[1250px] mx-auto px-2 sm:px-6 pb-24 lg:pb-0">
+            <div className="w-full md:max-w-[1250px] md:mx-auto px-0 md:px-2 md:sm:px-6 pb-24 lg:pb-0">
                 {/* Product Details */}
                 {loading ? (
                     <>
@@ -189,12 +189,16 @@ export default function ProductBySlug() {
                         <ProductDescription product={product} reviews={reviews || []} loadingReviews={loadingReviews} onReviewAdded={() => fetchReviews(product._id || product.id)} />
                         {/* Related Products */}
                         {relatedProducts.length > 0 && (
-                            <div className="px-4 mt-12 mb-16">
-                                <h2 className="text-2xl font-semibold text-slate-800 mb-6">Related Products</h2>
-                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-5 xl:grid-cols-5 gap-6">
-                                    {relatedProducts.map((prod) => (
-                                        <ProductCard key={prod.id} product={prod} />
-                                    ))}
+                            <div className="-mx-0 md:mx-0 mt-12 mb-16">
+                                <div className="px-4 md:px-0">
+                                    <h2 className="text-2xl font-semibold text-slate-800 mb-6">Related Products</h2>
+                                </div>
+                                <div className="px-4 md:px-0">
+                                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-5 xl:grid-cols-5 gap-6">
+                                        {relatedProducts.map((prod) => (
+                                            <ProductCard key={prod.id} product={prod} />
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
                         )}

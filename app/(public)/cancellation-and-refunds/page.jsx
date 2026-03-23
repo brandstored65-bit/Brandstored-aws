@@ -5,7 +5,7 @@ export default function CancellationAndRefunds() {
 
       <p className="mb-4">
         This Cancellation & Refund Policy applies to all purchases made on
-        <strong> QuickFynd.com</strong>, which is owned and operated by
+        <strong> brandstored.com</strong>, which is owned and operated by
         <strong> Nilaas</strong>. QuickFynd is an e-commerce platform delivering
         products across Kerala, India.
       </p>
@@ -89,10 +89,10 @@ export default function CancellationAndRefunds() {
         <strong>Business Name:</strong> Nilaas
       </p>
       <p className="mb-1">
-        <strong>Email:</strong> support@quickfynd.com
+        <strong>Email:</strong> support@brandstored.com
       </p>
       <p className="mb-1">
-        <strong>Website:</strong> https://www.quickfynd.com
+        <strong>Website:</strong> https://www.brandstored.com
       </p>
 
       <p className="text-sm text-gray-600 mt-6">

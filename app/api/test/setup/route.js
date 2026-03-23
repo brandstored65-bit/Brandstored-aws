@@ -20,7 +20,7 @@ export async function POST(request) {
         userId: "default-admin",
         username: "quickfynd",
         description: "Your online marketplace",
-        email: "admin@quickfynd.com",
+        email: "admin@brandstored.com",
         isActive: true,
         status: "approved",
       });

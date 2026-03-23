@@ -62,7 +62,7 @@ export async function POST(request) {
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto;">
         <h2 style="color: #ff6600;">Quickfynd Store Invitation</h2>
         <p>Hello,</p>
-        <p><b>${store.name}</b> has invited you to join their store team on <a href="https://quickfynd.com" style="color: #ff6600;">Quickfynd</a>.</p>
+        <p><b>${store.name}</b> has invited you to join their store team on <a href="https://brandstored.com" style="color: #ff6600;">Quickfynd</a>.</p>
         <p style="margin: 24px 0;">
           <a href="${inviteUrl}" style="background: #ff6600; color: #fff; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold;">Accept Invitation</a>
         </p>

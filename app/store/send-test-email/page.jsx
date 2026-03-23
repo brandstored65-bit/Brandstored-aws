@@ -212,7 +212,7 @@ export default function SendTestEmailPage() {
             <ul className="space-y-2 text-sm text-amber-800">
               <li>• Check your spam/junk folder if email doesn't arrive</li>
               <li>• Test emails may take 1-2 minutes to deliver</li>
-              <li>• Emails are sent from marketing@quickfynd.com</li>
+              <li>• Emails are sent from marketing@brandstored.com</li>
               <li>• Make sure your store has published products</li>
               <li>• Click product cards to verify links work</li>
               <li>• Test on both desktop and mobile</li>

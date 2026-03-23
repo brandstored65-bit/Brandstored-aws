@@ -40,9 +40,9 @@ export default function CheckoutPage() {
   const [form, setForm] = useState({
     addressId: "",
     payment: "cod",
-    phoneCode: '+91',
-    country: 'India',
-    state: 'Kerala',
+    phoneCode: '+971',
+    country: 'United Arab Emirates',
+    state: 'Dubai',
     district: '',
     street: '',
     city: '',
@@ -51,11 +51,20 @@ export default function CheckoutPage() {
     email: '',
     phone: '',
     alternatePhone: '',
-    alternatePhoneCode: '+91',
+    alternatePhoneCode: '+971',
   });
 
   // For India state/district dropdowns
   const keralaDistricts = indiaStatesAndDistricts.find(s => s.state === 'Kerala')?.districts || [];
+  const uaeEmirates = [
+    'Abu Dhabi',
+    'Dubai',
+    'Sharjah',
+    'Ajman',
+    'Umm Al Quwain',
+    'Ras Al Khaimah',
+    'Fujairah',
+  ];
   const [districts, setDistricts] = useState(keralaDistricts);
   const [placingOrder, setPlacingOrder] = useState(false);
   const [payingNow, setPayingNow] = useState(false);
@@ -92,6 +101,7 @@ export default function CheckoutPage() {
   const cleanDigits = (value) => (value ? String(value).replace(/\D/g, '') : '');
   const sanitizePincode = (value) => cleanDigits(value).trim();
   const isZeroOnlyPincode = (value) => /^0+$/.test(String(value || '').trim());
+  const isIndiaCountry = (value) => String(value || '').trim().toLowerCase() === 'india';
   const hasValidPhone = (value) => /^[0-9]{7,15}$/.test(cleanDigits(value));
   const pickValidPincode = (...values) => {
     for (const value of values) {
@@ -277,7 +287,7 @@ export default function CheckoutPage() {
         const payload = {
           items,
           cartTotal,
-          currency: process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || '₹',
+          currency: process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || 'AED',
           userId: user?.uid || null,
           customer: {
             name: form.name || null,
@@ -517,13 +527,13 @@ export default function CheckoutPage() {
 
   // Auto-open pincode modal for guests without saved addresses or when no address is present
   useEffect(() => {
-    if (!authLoading && !user && addressList.length === 0 && !form.pincode) {
+    if (!authLoading && !user && addressList.length === 0 && !form.pincode && isIndiaCountry(form.country || 'India')) {
       const timer = setTimeout(() => {
         setShowPincodeModal(true);
       }, 500); // Small delay for better UX
       return () => clearTimeout(timer);
     }
-  }, [authLoading, user, addressList, form.pincode]);
+  }, [authLoading, user, addressList, form.pincode, form.country]);
 
   const handlePincodeSubmit = (pincodeData) => {
     setForm(f => ({
@@ -775,9 +785,13 @@ export default function CheckoutPage() {
     } else if (name === 'payment') {
       setForm(f => ({ ...f, [name]: value }));
     } else if (name === 'pincode') {
-      // Keep pincode numeric-only to avoid bad values
-      const numeric = String(value || '').replace(/\D/g, '').slice(0, 10);
-      setForm(f => ({ ...f, pincode: numeric }));
+      if (isIndiaCountry(form.country)) {
+        const numeric = String(value || '').replace(/\D/g, '').slice(0, 10);
+        setForm(f => ({ ...f, pincode: numeric }));
+      } else {
+        const normalized = String(value || '').replace(/[^a-zA-Z0-9\s-]/g, '').slice(0, 20);
+        setForm(f => ({ ...f, pincode: normalized }));
+      }
     } else {
       setForm(f => ({ ...f, [name]: value }));
     }
@@ -909,27 +923,32 @@ export default function CheckoutPage() {
     // Clean and validate phone number
     const cleanedPhone = cleanDigits(form.phone);
     const cleanedAlternatePhone = cleanDigits(form.alternatePhone);
+    const isIndiaCheckout = isIndiaCountry(form.country || 'India');
     let resolvedPincode = sanitizePincode(form.pincode);
 
-    // Auto-fill pincode from selected saved address if user entered invalid zero-only pincode
-    if (!resolvedPincode || isZeroOnlyPincode(resolvedPincode)) {
-      const selectedAddr = (form.addressId && addressList.find(a => a._id === form.addressId)) || null;
-      const fallbackPincode = pickValidPincode(selectedAddr?.zip, selectedAddr?.pincode);
+    if (isIndiaCheckout) {
+      // Auto-fill pincode from selected saved address if user entered invalid zero-only pincode
+      if (!resolvedPincode || isZeroOnlyPincode(resolvedPincode)) {
+        const selectedAddr = (form.addressId && addressList.find(a => a._id === form.addressId)) || null;
+        const fallbackPincode = pickValidPincode(selectedAddr?.zip, selectedAddr?.pincode);
 
-      if (fallbackPincode) {
-        resolvedPincode = fallbackPincode;
-        setForm((f) => ({ ...f, pincode: fallbackPincode }));
+        if (fallbackPincode) {
+          resolvedPincode = fallbackPincode;
+          setForm((f) => ({ ...f, pincode: fallbackPincode }));
+        }
       }
-    }
 
-    if (!resolvedPincode || isZeroOnlyPincode(resolvedPincode)) {
-      setFormError('Please enter a valid pincode.');
-      return;
-    }
+      if (!resolvedPincode || isZeroOnlyPincode(resolvedPincode)) {
+        setFormError('Please enter a valid pincode.');
+        return;
+      }
 
-    if ((form.country || 'India') === 'India' && resolvedPincode.length !== 6) {
-      setFormError('Please enter a valid 6-digit Indian pincode.');
-      return;
+      if (resolvedPincode.length !== 6) {
+        setFormError('Please enter a valid 6-digit Indian pincode.');
+        return;
+      }
+    } else {
+      resolvedPincode = '';
     }
 
     console.log('Checkout validation - Phone details:', {
@@ -1004,7 +1023,7 @@ export default function CheckoutPage() {
             payload.coinsToRedeem = safeRedeemCoins;
           }
         } else {
-          if (!form.name || !form.email || !form.phone || !form.street || !form.city || !form.state || !form.country || !form.pincode) {
+          if (!form.name || !form.email || !form.phone || !form.street || !form.city || !form.state || !form.country || (isIndiaCheckout && !resolvedPincode)) {
             setFormError("Please fill all required shipping details.");
             setPlacingOrder(false);
             return;
@@ -1021,7 +1040,7 @@ export default function CheckoutPage() {
             city: form.city,
             state: form.state,
             country: form.country,
-            pincode: resolvedPincode,
+            pincode: resolvedPincode || '',
           };
         }
         
@@ -1078,7 +1097,7 @@ export default function CheckoutPage() {
         }
         
         if (maxCODAmount > 0 && remainingAmount > maxCODAmount) {
-          setFormError(`COD is not available for orders above ₹${maxCODAmount}. Your order amount after wallet is ₹${remainingAmount.toFixed(2)}. Please use online payment.`);
+          setFormError(`COD is not available for orders above AED${maxCODAmount}. Your order amount after wallet is AED${remainingAmount.toFixed(2)}. Please use online payment.`);
           setPlacingOrder(false);
           return;
         }
@@ -1131,7 +1150,7 @@ export default function CheckoutPage() {
         // Only add addressId if it exists
         if (addressId || (addressList[0] && addressList[0]._id)) {
           payload.addressId = addressId || addressList[0]._id;
-        } else if (form.street && form.city && form.state && form.country && resolvedPincode) {
+        } else if (form.street && form.city && form.state && form.country && (isIndiaCheckout ? !!resolvedPincode : true)) {
           // User is logged in but has no saved address - include address in payload
           payload.addressData = {
             name: form.name || user.displayName || '',
@@ -1144,7 +1163,7 @@ export default function CheckoutPage() {
             city: form.city,
             state: form.state,
             country: form.country || 'India',
-            zip: resolvedPincode || form.zip || '',
+            zip: resolvedPincode || '',
             district: form.district || ''
           };
         }
@@ -1167,7 +1186,7 @@ export default function CheckoutPage() {
             city: form.city,
             state: form.state,
             country: form.country,
-            pincode: resolvedPincode,
+            pincode: resolvedPincode || '',
           }
         };
         // Add coupon for guest if applied
@@ -1389,6 +1408,9 @@ export default function CheckoutPage() {
     );
   }
 
+  const isIndiaFormCountry = isIndiaCountry(form.country || 'India');
+  const isGuestAddressReady = !!(form.name && form.phone && form.city && form.state && form.street && (!isIndiaFormCountry || form.pincode));
+
   if (showPrepaidModal || navigatingToSuccess) {
     // If we just placed a COD order, show the prepaid upsell modal even though cart is empty
     if (showPrepaidModal || navigatingToSuccess) {
@@ -1450,7 +1472,7 @@ export default function CheckoutPage() {
         contentIds={cartArray.map((item) => String(item?._id || item?._cartKey || '')).filter(Boolean)}
         numItems={cartArray.reduce((sum, item) => sum + Number(item?.quantity || 0), 0)}
       />
-      <div className="py-10 bg-white md:pb-0 pb-32 min-h-[35dvh]">
+      <div className="py-10 bg-white md:pb-0 pb-20 min-h-0 md:min-h-[35dvh]">
       <div className="max-w-[1250px] mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* Left column: address, form, payment */}
         <div className="md:col-span-2">
@@ -1465,7 +1487,7 @@ export default function CheckoutPage() {
                     <div className="flex-1 min-w-0">
                       <div className="font-semibold text-gray-900 truncate">{item.name}</div>
                       <div className="text-xs text-gray-500 truncate">{item.brand || ''}</div>
-                      <div className="text-xs text-gray-400">₹ {Number(item._cartPrice ?? item.price ?? 0).toLocaleString()}</div>
+                      <div className="text-xs text-gray-400">AED {Number(item._cartPrice ?? item.price ?? 0).toLocaleString()}</div>
                     </div>
                     <div className="flex flex-col items-center gap-1">
                       <div className="flex items-center gap-1">
@@ -1543,7 +1565,7 @@ export default function CheckoutPage() {
                             paymentMethod: form.payment === 'cod' ? 'COD' : 'CARD',
                             shippingState: form.state
                           });
-                          return baseShip === 0 ? 'Free' : `₹${baseShip}`;
+                          return baseShip === 0 ? 'Free' : `AED${baseShip}`;
                         })()}
                       </div>
                     </div>
@@ -1574,11 +1596,11 @@ export default function CheckoutPage() {
                             <div className="text-xs text-gray-600">{shippingSetting?.expressEstimatedDays || '1-2'} days</div>
                           </div>
                         </div>
-                        <div className="text-xs text-blue-600 ml-7">+₹{shippingSetting?.expressShippingFee || 0} extra</div>
+                        <div className="text-xs text-blue-600 ml-7">+AED{shippingSetting?.expressShippingFee || 0} extra</div>
                       </div>
                       <div className="text-right flex-shrink-0">
                         <div className="font-bold text-lg text-blue-600">
-                          ₹
+                          AED
                           {(() => {
                             const baseShip = calculateShipping({ 
                               cartItems: cartArray, 
@@ -1603,7 +1625,7 @@ export default function CheckoutPage() {
                 );
                 return stateCharge ? (
                   <div className="text-xs text-slate-600 mt-2">
-                    ℹ️ <span className="font-medium">Shipping charge for {form.state}:</span> ₹{stateCharge.fee} (varies by state)
+                    ℹ️ <span className="font-medium">Shipping charge for {form.state}:</span> AED{stateCharge.fee} (varies by state)
                   </div>
                 ) : null;
               })()}
@@ -1892,39 +1914,53 @@ export default function CheckoutPage() {
                     value={form.email || ''}
                     onChange={handleChange}
                   />
-                  {/* Pincode with auto-fill option */}
-                  <div className="flex gap-2 items-center">
+                  {/* Pincode / Postal code */}
+                  {isIndiaCountry(form.country) ? (
+                    <>
+                      <div className="flex gap-2 items-center">
+                        <input
+                          className="border border-gray-200 bg-white rounded px-4 py-2 focus:border-gray-400 flex-1"
+                          type="text"
+                          name="pincode"
+                          placeholder="Pincode"
+                          value={form.pincode || ''}
+                          onChange={(e) => {
+                            const value = e.target.value.replace(/\D/g, '').slice(0, 6);
+                            handleChange({ target: { name: 'pincode', value } });
+                          }}
+                          maxLength={6}
+                          pattern="[0-9]{6}"
+                          required
+                        />
+                        <button
+                          type="button"
+                          onClick={handleAutoFillClick}
+                          className="px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600 whitespace-nowrap text-sm font-semibold"
+                        >
+                          Auto-fill
+                        </button>
+                      </div>
+                      {form.pincode && /^0+$/.test(String(form.pincode).trim()) ? (
+                        <div className="text-xs text-red-500 -mt-2">
+                          Please enter a valid pincode. All-zero values are not allowed.
+                        </div>
+                      ) : form.pincode ? (
+                        <div className="text-xs text-gray-500 -mt-2">
+                          ✓ Address auto-filled from pincode
+                        </div>
+                      ) : null}
+                    </>
+                  ) : (
                     <input
-                      className="border border-gray-200 bg-white rounded px-4 py-2 focus:border-gray-400 flex-1"
+                      className="border border-gray-200 bg-white rounded px-4 py-2 focus:border-gray-400"
                       type="text"
                       name="pincode"
-                      placeholder="Pincode"
+                      placeholder="Postal code (optional)"
                       value={form.pincode || ''}
-                      onChange={(e) => {
-                        const value = e.target.value.replace(/\D/g, '').slice(0, 6);
-                        handleChange({ target: { name: 'pincode', value } });
-                      }}
-                      maxLength={6}
-                      pattern="[0-9]{6}"
-                      required={form.country === 'India'}
+                      onChange={handleChange}
+                      maxLength={20}
                     />
-                    <button
-                      type="button"
-                      onClick={handleAutoFillClick}
-                      className="px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600 whitespace-nowrap text-sm font-semibold"
-                    >
-                      Auto-fill
-                    </button>
-                  </div>
-                  {form.pincode && /^0+$/.test(String(form.pincode).trim()) ? (
-                    <div className="text-xs text-red-500 -mt-2">
-                      Please enter a valid pincode. All-zero values are not allowed.
-                    </div>
-                  ) : form.pincode ? (
-                    <div className="text-xs text-gray-500 -mt-2">
-                      ✓ Address auto-filled from pincode
-                    </div>
-                  ) : null}
+                  )}
                   {/* City - Auto-filled from pincode */}
                   <input
                     className="border border-gray-200 bg-white rounded px-4 py-2 focus:border-gray-400"
@@ -1961,19 +1997,44 @@ export default function CheckoutPage() {
                     onChange={handleChange}
                     required
                   />
-                  {/* State dropdown (all states, default Kerala) */}
-                  <select
-                    className="border border-gray-200 bg-white rounded px-4 py-2 focus:border-gray-400"
-                    name="state"
-                    value={form.state}
-                    onChange={handleChange}
-                    required
-                  >
-                    <option value="">Select State</option>
-                    {indiaStatesAndDistricts.map((s) => (
-                      <option key={s.state} value={s.state}>{s.state}</option>
-                    ))}
-                  </select>
+                  {/* State/Emirate */}
+                  {form.country === 'India' ? (
+                    <select
+                      className="border border-gray-200 bg-white rounded px-4 py-2 focus:border-gray-400"
+                      name="state"
+                      value={form.state}
+                      onChange={handleChange}
+                      required
+                    >
+                      <option value="">Select State</option>
+                      {indiaStatesAndDistricts.map((s) => (
+                        <option key={s.state} value={s.state}>{s.state}</option>
+                      ))}
+                    </select>
+                  ) : form.country === 'United Arab Emirates' ? (
+                    <select
+                      className="border border-gray-200 bg-white rounded px-4 py-2 focus:border-gray-400"
+                      name="state"
+                      value={form.state}
+                      onChange={handleChange}
+                      required
+                    >
+                      <option value="">Select Emirate</option>
+                      {uaeEmirates.map((emirate) => (
+                        <option key={emirate} value={emirate}>{emirate}</option>
+                      ))}
+                    </select>
+                  ) : (
+                    <input
+                      className="border border-gray-200 bg-white rounded px-4 py-2 focus:border-gray-400"
+                      type="text"
+                      name="state"
+                      placeholder="Emirate / State"
+                      value={form.state || ''}
+                      onChange={handleChange}
+                      required
+                    />
+                  )}
                   {/* Country dropdown (default India) */}
                   <select
                     className="border border-gray-200 bg-white rounded px-4 py-2 focus:border-gray-400"
@@ -2023,7 +2084,7 @@ export default function CheckoutPage() {
                     <div>
                       <span className="font-semibold text-gray-900">Use Wallet</span>
                       <div className="text-xs text-gray-600">
-                        {user ? `Balance ₹ ${walletBalance.toLocaleString()}` : 'Sign in to view wallet'}
+                        {user ? `Balance AED ${walletBalance.toLocaleString()}` : 'Sign in to view wallet'}
                       </div>
                     </div>
                   </div>
@@ -2031,7 +2092,7 @@ export default function CheckoutPage() {
                     <span className="text-xs text-blue-600 ml-7">Sign in to use wallet</span>
                   )}
                   {user && walletBalance <= 0 && (
-                    <span className="text-xs text-gray-500 ml-7">Wallet balance is ₹ 0</span>
+                    <span className="text-xs text-gray-500 ml-7">Wallet balance is AED 0</span>
                   )}
                   {user && walletBalance > 0 && !walletCanCoverTotal && (
                     <span className="text-xs text-gray-500 ml-7">Will apply wallet and pay remaining with another method</span>
@@ -2041,7 +2102,7 @@ export default function CheckoutPage() {
 
               {safeRedeemCoins > 0 && safeRedeemCoins < total && (
                 <h3 className="text-sm font-semibold text-gray-700 mb-2 px-1">
-                  Pay remaining ₹ {(total - walletDiscount).toLocaleString()} with:
+                  Pay remaining AED {(total - walletDiscount).toLocaleString()} with:
                 </h3>
               )}
 
@@ -2114,7 +2175,7 @@ export default function CheckoutPage() {
                           </div>
                         </div>
                         {isCODDisabled && maxCODAmount > 0 && remainingAmount > maxCODAmount && (
-                          <span className="text-xs text-red-600 ml-8">Max limit ₹{maxCODAmount}</span>
+                          <span className="text-xs text-red-600 ml-8">Max limit AED{maxCODAmount}</span>
                         )}
                         {isWalletOnly && (
                           <span className="text-xs text-gray-500 ml-8">Covered by wallet</span>
@@ -2174,11 +2235,11 @@ export default function CheckoutPage() {
           <div className="space-y-2 mb-4 pb-4 border-b border-gray-200">
             <div className="flex justify-between text-sm text-gray-900">
               <span>Items</span>
-              <span>₹ {subtotal.toLocaleString()}</span>
+              <span>AED {subtotal.toLocaleString()}</span>
             </div>
             <div className="flex justify-between text-sm text-gray-900">
               <span>Shipping & handling</span>
-              <span>{shipping > 0 ? `₹ ${shipping.toLocaleString()}` : '₹ 0'}</span>
+              <span>{shipping > 0 ? `AED ${shipping.toLocaleString()}` : 'AED 0'}</span>
             </div>
             {appliedCoupon && couponDiscount > 0 && (
               <div className="flex justify-between text-sm text-blue-600 font-semibold">
@@ -2349,7 +2410,7 @@ export default function CheckoutPage() {
       <div className="fixed bottom-0 left-0 right-0 md:hidden bg-white border-t border-gray-200 shadow-lg z-40 p-4">
         <div className="max-w-6xl mx-auto">
           {/* Address validation message */}
-          {!form.addressId && !(form.name && form.phone && form.pincode && form.city && form.state && form.street) && (
+          {!form.addressId && !isGuestAddressReady && (
             <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 text-sm p-3 rounded mb-3">
               Please fill the address to continue
             </div>
@@ -2359,7 +2420,7 @@ export default function CheckoutPage() {
             type="submit"
             form="checkout-form"
             className={`relative w-full text-white font-bold py-4 rounded-lg text-base transition shadow-md hover:shadow-lg flex items-center justify-between px-6 ${
-              (!form.addressId && !(form.name && form.phone && form.pincode && form.city && form.state && form.street)) || isPlaceOrderDisabled 
+              (!form.addressId && !isGuestAddressReady) || isPlaceOrderDisabled 
                 ? 'bg-gray-400 cursor-not-allowed opacity-75' 
                 : form.payment === 'cod' 
                   ? 'bg-green-600 hover:bg-green-700' 
@@ -2369,7 +2430,7 @@ export default function CheckoutPage() {
                       ? 'bg-green-600 hover:bg-green-700'
                     : 'bg-red-600 hover:bg-red-700'
             } ${placingOrder ? 'animate-bounce' : ''}`}
-            disabled={(!form.addressId && !(form.name && form.phone && form.pincode && form.city && form.state && form.street)) || isPlaceOrderDisabled}
+            disabled={(!form.addressId && !isGuestAddressReady) || isPlaceOrderDisabled}
             aria-busy={placingOrder}
           >
             <span className="text-lg font-bold">₹ {totalAfterWallet.toLocaleString()}</span>

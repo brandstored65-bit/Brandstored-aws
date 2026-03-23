@@ -10,9 +10,9 @@ import { getAuth } from "firebase/auth";
 import Image from 'next/image';
 import axios from "axios";
 import toast from "react-hot-toast";
-import Logo from "../assets/logo/logo1.png";
-import LogoWhite from "../assets/logo/logo1.png";
-import LogoMobile from "../assets/logo/logo1.png";
+import Logo from "../assets/logo/logo3.png";
+import LogoWhite from "../assets/logo/logo3.png";
+import LogoMobile from "../assets/logo/logo3.png";
 import Truck from '../assets/delivery.png';
 import WalletIcon from '../assets/common/wallet.svg';
 import SignInModal from './SignInModal';
@@ -633,97 +633,76 @@ const Navbar = () => {
 
   return (
     <>
-      {/* Mobile-Only Simple Navbar for Non-Home Pages */}
-      {!isHomePage && (
-        <nav className="lg:hidden sticky top-0 z-50 bg-white shadow-sm">
-          <div className="flex items-center justify-between gap-3 px-4 py-3 bg-white">
-            {/* Left: Logo */}
-            <Link href="/" className="flex items-center flex-shrink-0">
-              <Image 
-                src={LogoMobile} 
-                alt="Quickfynd" 
-                width={120} 
-                height={32}
-                className="h-8 w-auto object-contain"
-                priority
+      {/* Mobile Header */}
+      <nav className="lg:hidden sticky top-0 z-50 bg-[#BE181B] shadow-sm">
+        <div className="flex items-center gap-3 px-3 py-3 bg-[#BE181B]">
+          <Link href="/" className="flex items-center flex-shrink-0">
+            <Image
+              src={LogoMobile}
+              alt="Quickfynd"
+              width={120}
+              height={32}
+              className="h-8 w-auto object-contain"
+              priority
+            />
+          </Link>
+
+          <form onSubmit={handleSearch} className="flex-1 relative">
+            <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-lg border border-white/70">
+              <input
+                type="text"
+                placeholder={searchPlaceholder || "More than"}
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                onFocus={() => setSearchFocused(true)}
+                onBlur={() => setTimeout(() => setSearchFocused(false), 150)}
+                className="w-full bg-transparent outline-none placeholder-gray-500 text-gray-800 text-sm"
               />
-            </Link>
+              <button
+                type="submit"
+                aria-label="Search"
+                className="flex-shrink-0"
+              >
+                <Search size={18} className="text-[#BE181B]" />
+              </button>
+            </div>
 
-            {/* Center: Search Bar */}
-            <form onSubmit={handleSearch} className="flex-1 max-w-md relative">
-              <div className="flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-md border border-gray-200">
-                <Search size={16} className="text-gray-500 flex-shrink-0" />
-                <input
-                  type="text"
-                  placeholder="Search products..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  onFocus={() => setSearchFocused(true)}
-                  onBlur={() => setTimeout(() => setSearchFocused(false), 150)}
-                  className="w-full bg-transparent outline-none placeholder-gray-400 text-gray-800 text-sm"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowImageSearch(true)}
-                  aria-label="Search by image"
-                  className="flex-shrink-0"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-gray-500">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5V7.5A2.25 2.25 0 015.25 5.25h2.086a2.25 2.25 0 001.591-.659l.828-.828A2.25 2.25 0 0111.75 3h.5a2.25 2.25 0 011.595.663l.828.828a2.25 2.25 0 001.591.659h2.086A2.25 2.25 0 0121 7.5v9a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 16.5z" />
-                    <circle cx="12" cy="13" r="3" />
-                  </svg>
-                </button>
+            {searchFocused && searchSuggestions.length > 0 && (
+              <div className="absolute left-0 right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-50 overflow-hidden">
+                {searchSuggestions.map((product) => (
+                  <Link
+                    key={product._id || product.slug}
+                    href={`/product/${product.slug || product._id}`}
+                    className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                    onClick={() => setSearchFocused(false)}
+                  >
+                    <div className="relative h-8 w-8 overflow-hidden rounded-md bg-gray-100">
+                      {product.image || product.images?.[0] ? (
+                        <Image
+                          src={product.image || product.images?.[0]}
+                          alt={product.name || 'Product'}
+                          fill
+                          sizes="32px"
+                          className="object-cover"
+                        />
+                      ) : null}
+                    </div>
+                    <div className="min-w-0">
+                      <span className="font-medium block truncate">{product.name}</span>
+                      {product.brand && (
+                        <span className="text-xs text-gray-500 truncate">{product.brand}</span>
+                      )}
+                    </div>
+                  </Link>
+                ))}
               </div>
-              {searchFocused && searchSuggestions.length > 0 && (
-                <div className="absolute left-0 right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-50 overflow-hidden">
-                  {searchSuggestions.map((product) => (
-                    <Link
-                      key={product._id || product.slug}
-                      href={`/product/${product.slug || product._id}`}
-                      className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                      onClick={() => setSearchFocused(false)}
-                    >
-                      <div className="relative h-8 w-8 overflow-hidden rounded-md bg-gray-100">
-                        {product.image || product.images?.[0] ? (
-                          <Image
-                            src={product.image || product.images?.[0]}
-                            alt={product.name || 'Product'}
-                            fill
-                            sizes="32px"
-                            className="object-cover"
-                          />
-                        ) : null}
-                      </div>
-                      <div className="min-w-0">
-                        <span className="font-medium block truncate">{product.name}</span>
-                        {product.brand && (
-                          <span className="text-xs text-gray-500 truncate">{product.brand}</span>
-                        )}
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </form>
+            )}
+          </form>
+        </div>
+      </nav>
 
-            {/* Right: Cart */}
-            <button 
-              onClick={handleCartClick} 
-              className="relative p-2 flex-shrink-0"
-            >
-              <ShoppingCart size={22} className="text-gray-800" strokeWidth={2} />
-              {isClient && cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-orange-500 text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
-                  {cartCount}
-                </span>
-              )}
-            </button>
-          </div>
-        </nav>
-      )}
-
-      {/* Original Full Navbar (Hidden on mobile for non-home pages) */}
-      <nav className={`relative z-50 shadow-sm ${!isHomePage ? 'hidden lg:block' : ''}`} style={{ backgroundColor: '#ffffff', borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
+      {/* Original Full Navbar (Desktop only) */}
+      <nav className="relative z-50 shadow-sm hidden lg:block" style={{ backgroundColor: '#BE181B', borderBottom: '1px solid rgba(255,255,255,0.2)' }}>
       <div className="max-w-[1250px] mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between py-3 transition-all">
 
@@ -733,15 +712,15 @@ const Navbar = () => {
             {isHomePage && (
               <button 
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)} 
-                className="lg:hidden p-2 hover:bg-gray-100 rounded-full transition"
+                className="lg:hidden p-2 hover:bg-white/10 rounded-full transition"
               >
-                {mobileMenuOpen ? <X size={24} className="text-gray-800" /> : <Menu size={24} className="text-gray-800" />}
+                {mobileMenuOpen ? <X size={24} className="text-white" /> : <Menu size={24} className="text-white" />}
               </button>
             )}
             
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2 flex-shrink-0">
-              <Image src={Logo} alt="Qui Logo" width={198} height={56} className="object-contain" priority />
+              <Image src={LogoWhite} alt="Qui Logo" width={198} height={56} className="object-contain" priority />
             </Link>
           </div>
 
@@ -749,7 +728,7 @@ const Navbar = () => {
           <div className="hidden lg:flex items-center flex-1 justify-between gap-3 px-4">
             {/* Left Links */}
             <div className="flex items-center gap-4 flex-shrink-0">
-              <Link href="/5-star-rated" className="text-sm font-medium text-gray-800 hover:text-gray-600 transition whitespace-nowrap flex items-center gap-1.5">
+              <Link href="/5-star-rated" className="text-sm font-medium text-white hover:text-white/80 transition whitespace-nowrap flex items-center gap-1.5">
                 <StarIcon size={16} className="text-[#E6003E]" fill="#E6003E" />
                 5 Star Rated
               </Link>
@@ -769,7 +748,7 @@ const Navbar = () => {
                   }, 200);
                 }}
               >
-                <button className="text-sm font-medium text-gray-800 hover:text-orange-500 transition whitespace-nowrap flex items-center gap-1">
+                <button className="text-sm font-medium text-white hover:text-white/80 transition whitespace-nowrap flex items-center gap-1">
                   Categories
                   <svg className={`w-4 h-4 transition-transform ${categoriesDropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -1105,7 +1084,7 @@ const Navbar = () => {
                   setSignInMode('login');
                   setSignInOpen(true);
                 }}
-                className="px-4 py-2 bg-gradient-to-r from-[#E6003E] to-[#591223] hover:from-[#d10038] hover:to-[#4a0e1c] transition text-white text-xs font-medium rounded-full flex items-center gap-2 shadow-md"
+                className="px-4 py-2 bg-white hover:bg-gray-100 transition text-black text-xs font-medium rounded-full flex items-center gap-2 shadow-md"
               >
                 <User className="w-5 h-5" />
                 <div className="flex flex-col leading-tight text-left">
@@ -1158,8 +1137,8 @@ const Navbar = () => {
             </div>
 
             {/* Wishlist */}
-            <Link href={firebaseUser ? "/dashboard/wishlist" : "/wishlist"} className="relative p-2 hover:bg-gray-100 rounded-full transition group">
-              <HeartIcon size={22} className="text-gray-800 group-hover:text-orange-500 transition" />
+            <Link href={firebaseUser ? "/dashboard/wishlist" : "/wishlist"} className="relative p-2 hover:bg-white/10 rounded-full transition group">
+              <HeartIcon size={22} className="text-white group-hover:text-white/80 transition" />
               {wishlistCount > 0 && (
                 <span className="absolute -top-1 -right-1 text-[10px] font-bold text-white bg-orange-500 rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
                   {wishlistCount}
@@ -1168,8 +1147,8 @@ const Navbar = () => {
             </Link>
 
             {/* Cart */}
-            <button onClick={handleCartClick} className="relative p-2 hover:bg-gray-100 rounded-full transition group">
-  <ShoppingCart size={22} className="text-gray-800 group-hover:text-orange-500 transition" />
+            <button onClick={handleCartClick} className="relative p-2 hover:bg-white/10 rounded-full transition group">
+  <ShoppingCart size={22} className="text-white group-hover:text-white/80 transition" />
   {isClient && cartCount > 0 && (
     <span className="absolute -top-1 -right-1 text-[10px] font-bold text-white bg-blue-600 rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
       {cartCount}
@@ -1200,9 +1179,9 @@ const Navbar = () => {
               ) : (
                 <button
                   onClick={() => setSignInOpen(true)}
-                  className="p-2 hover:bg-gray-100 rounded-full transition"
+                  className="p-2 hover:bg-white/10 rounded-full transition"
                 >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1f2937" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                     <circle cx="12" cy="7" r="4"></circle>
                   </svg>
@@ -1211,7 +1190,7 @@ const Navbar = () => {
             )}
             
             <button onClick={handleCartClick} className="relative p-2">
-              <ShoppingCart size={20} className="text-gray-800" />
+              <ShoppingCart size={20} className="text-white" />
               {isClient && cartCount > 0 && (
                 <span className="absolute -top-1 -right-1 text-[10px] font-bold text-white bg-blue-600 rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
                   {cartCount}
@@ -1221,63 +1200,7 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* Mobile Search Bar - Below main navbar on mobile */}
-        <div className="lg:hidden pb-3" style={{ backgroundColor: '#ffffff' }}>
-          <form onSubmit={handleSearch} className="relative flex items-center text-sm gap-2 bg-gray-100 mx-4 px-4 py-2.5 rounded-full border border-gray-200">
-            <Search size={18} className="text-gray-500" />
-            <input
-              type="text"
-              placeholder={searchPlaceholder || "Search products"}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              onFocus={() => setSearchFocused(true)}
-              onBlur={() => setTimeout(() => setSearchFocused(false), 150)}
-              className="w-full bg-transparent outline-none placeholder-gray-500 text-gray-700"
-              required
-            />
-            <button
-              type="button"
-              onClick={() => setShowImageSearch(true)}
-              aria-label="Search by image"
-              className="flex-shrink-0"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 text-gray-500">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5V7.5A2.25 2.25 0 015.25 5.25h2.086a2.25 2.25 0 001.591-.659l.828-.828A2.25 2.25 0 0111.75 3h.5a2.25 2.25 0 011.595.663l.828.828a2.25 2.25 0 001.591.659h2.086A2.25 2.25 0 0121 7.5v9a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 16.5z" />
-                <circle cx="12" cy="13" r="3" />
-              </svg>
-            </button>
-            {searchFocused && searchSuggestions.length > 0 && (
-              <div className="absolute left-0 right-0 top-full mt-2 bg-white border border-gray-200 rounded-xl shadow-xl z-50 overflow-hidden">
-                {searchSuggestions.map((product) => (
-                  <Link
-                    key={product._id || product.slug}
-                    href={`/product/${product.slug || product._id}`}
-                    className="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50"
-                    onClick={() => setSearchFocused(false)}
-                  >
-                    <div className="relative h-8 w-8 overflow-hidden rounded-md bg-gray-100">
-                      {product.image || product.images?.[0] ? (
-                        <Image
-                          src={product.image || product.images?.[0]}
-                          alt={product.name || 'Product'}
-                          fill
-                          sizes="32px"
-                          className="object-cover"
-                        />
-                      ) : null}
-                    </div>
-                    <div className="min-w-0">
-                      <span className="font-medium block truncate">{product.name}</span>
-                      {product.brand && (
-                        <span className="text-xs text-gray-500 truncate">{product.brand}</span>
-                      )}
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            )}
-          </form>
-        </div>
+
 
         {/* Mobile Overlay Menu */}
         {mobileMenuOpen && (
@@ -1299,7 +1222,7 @@ const Navbar = () => {
               {firebaseUser === undefined ? null : !firebaseUser ? (
                 <button
                   type="button"
-                  className="w-full px-4 py-3 bg-gradient-to-r from-[#E6003E] to-[#591223] hover:from-[#d10038] hover:to-[#4a0e1c] text-white text-sm font-semibold rounded-full transition mb-4 flex items-center justify-center gap-2 shadow-md"
+                  className="w-full px-4 py-3 bg-white hover:bg-gray-100 text-black text-sm font-semibold rounded-full transition mb-4 flex items-center justify-center gap-2 shadow-md"
                   onClick={() => {
                     setSignInOpen(true);
                     setMobileMenuOpen(false);

@@ -105,19 +105,19 @@ export default function ContactUs() {
         <p className="mb-2">
           <strong>Website:</strong>{' '}
           <a
-            href="https://www.quickfynd.com"
+            href="https://www.brandstored.com"
             className="text-orange-600 hover:underline"
           >
-            https://www.quickfynd.com
+            https://www.brandstored.com
           </a>
         </p>
         <p className="mb-2">
           <strong>Email:</strong>{' '}
           <a
-            href="mailto:support@quickfynd.com"
+            href="mailto:support@brandstored.com"
             className="text-orange-600 hover:underline"
           >
-            support@quickfynd.com
+            support@brandstored.com
           </a>
         </p>
         <p className="mb-1">

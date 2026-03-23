@@ -74,6 +74,7 @@ export default function StoreOrders() {
     const [datePreset, setDatePreset] = useState('ALL');
     const [fromDate, setFromDate] = useState('');
     const [toDate, setToDate] = useState('');
+    const [exportTypeFilter, setExportTypeFilter] = useState('ALL');
     const [autoRefreshEnabled, setAutoRefreshEnabled] = useState(false);
     const [schedulingPickup, setSchedulingPickup] = useState(false);
     const [sendingToDelhivery, setSendingToDelhivery] = useState(false);
@@ -682,6 +683,184 @@ export default function StoreOrders() {
         }
     };
 
+    const toExcelSafeValue = (value) => {
+        if (value === null || value === undefined) return '';
+        return String(value).replace(/\t|\r|\n/g, ' ').trim();
+    };
+
+    const getCurrencyCode = () => {
+        return 'AED';
+    };
+
+    const normalizeUaeMobile = (phoneCode, phone, fallbackPhone) => {
+        const raw = [phoneCode, phone].filter(Boolean).join(' ').trim() || (fallbackPhone || '');
+        if (!raw) return '';
+
+        let digits = String(raw).replace(/\D/g, '');
+
+        if (digits.startsWith('971')) digits = digits.slice(3);
+        if (digits.startsWith('0')) digits = digits.slice(1);
+        if (digits.length > 9) digits = digits.slice(-9);
+
+        return digits;
+    };
+
+    const getProductShortDescription = (orderItems) => {
+        if (!Array.isArray(orderItems) || orderItems.length === 0) return '';
+        const first = orderItems[0] || {};
+        const name = first?.product?.name || first?.name || first?.productName || '';
+        return name ? String(name) : '';
+    };
+
+    const getProductsNote = (orderItems) => {
+        if (!Array.isArray(orderItems) || orderItems.length === 0) return '';
+        return orderItems
+            .map((item) => item?.product?.name || item?.name || item?.productName || '')
+            .filter(Boolean)
+            .join(', ');
+    };
+
+    const getDestinationFlatValue = (shipping) => {
+        return (
+            shipping?.flat ||
+            shipping?.flatNo ||
+            shipping?.flatNumber ||
+            shipping?.apartment ||
+            shipping?.apartmentNumber ||
+            shipping?.villa ||
+            shipping?.villaNumber ||
+            shipping?.landmark ||
+            shipping?.street ||
+            ''
+        );
+    };
+
+    const getExportFilteredOrders = () => {
+        const baseOrders = filteredOrders;
+
+        if (exportTypeFilter === 'ALL') return baseOrders;
+        if (exportTypeFilter === 'CANCELLED') {
+            return baseOrders.filter((order) => String(order?.status || '').toUpperCase() === 'CANCELLED');
+        }
+        if (exportTypeFilter === 'PAID') {
+            return baseOrders.filter((order) => isOrderPaid(order));
+        }
+        if (exportTypeFilter === 'COD') {
+            return baseOrders.filter((order) => String(order?.paymentMethod || order?.payment_method || '').toLowerCase() === 'cod');
+        }
+
+        return baseOrders;
+    };
+
+    const exportOrdersToExcel = async () => {
+        const exportOrders = getExportFilteredOrders();
+
+        if (!exportOrders.length) {
+            toast.error('No orders available to export');
+            return;
+        }
+
+        const headers = [
+            'Customer',
+            'Payment Type',
+            'Service Type',
+            'Courier Type',
+            'Currency',
+            'Cod',
+            'Description',
+            'Shipper Name',
+            'Shipper Phone',
+            'Origin Country',
+            'Origin City',
+            'Origin Address',
+            'Origin Flat Or Villa Number',
+            'Reciever Name',
+            'Reciever Phone Number',
+            'Destination Country',
+            'Destination City',
+            'Destination Address',
+            'Destination Flat Or Villa Number',
+            'Number Of Pieces',
+            'Length',
+            'Width',
+            'Height',
+            'Dimension',
+            'Weight',
+            'Weight Unit',
+            'Value',
+            'Note'
+        ];
+
+        const rows = exportOrders.map((order) => {
+            const shipping = order?.shippingAddress || {};
+            const orderItems = Array.isArray(order?.orderItems) ? order.orderItems : [];
+            const paymentMethod = String(order?.paymentMethod || order?.payment_method || '').toLowerCase();
+            const isCod = paymentMethod === 'cod';
+            const receiverPhone = normalizeUaeMobile(shipping?.phoneCode, shipping?.phone, order?.guestPhone);
+            const productName = getProductsNote(orderItems);
+            const description = productName || '';
+            const note = productName || '';
+
+            return [
+                order?.isGuest
+                    ? (order?.guestName || '')
+                    : (order?.userId?.name || order?.userId?.email || ''),
+                order?.paymentMethod || order?.payment_method || '',
+                'UAE DOM',
+                'DOCUMENTS',
+                getCurrencyCode(),
+                isCod ? (order?.total ?? '') : '',
+                description,
+                'Brandstored.com',
+                process.env.NEXT_PUBLIC_INVOICE_CONTACT || '',
+                'United Arab Emirates',
+                'Dubai',
+                'Firj Murar',
+                'Nil',
+                shipping?.name || order?.guestName || '',
+                receiverPhone || order?.guestPhone || '',
+                'United Arab Emirates',
+                shipping?.city || '',
+                shipping?.street || '',
+                getDestinationFlatValue(shipping),
+                1,
+                10,
+                5,
+                3,
+                'CM',
+                2.5,
+                'Kg',
+                isCod ? (order?.total ?? '') : '',
+                note
+            ].map(toExcelSafeValue);
+        });
+
+        try {
+            const XLSX = await import('xlsx');
+            const worksheetData = [headers, ...rows];
+            const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
+
+            worksheet['!cols'] = headers.map((header) => {
+                const maxCellLength = Math.max(
+                    header.length,
+                    ...rows.map((row) => (row[headers.indexOf(header)] || '').length)
+                );
+                return { wch: Math.min(Math.max(maxCellLength + 2, 12), 40) };
+            });
+
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, 'Orders');
+
+            const dateLabel = new Date().toISOString().slice(0, 10);
+            XLSX.writeFile(workbook, `store-orders-${dateLabel}.xlsx`);
+
+            toast.success(`Exported ${exportOrders.length} order(s)`);
+        } catch (error) {
+            console.error('Excel export failed:', error);
+            toast.error('Failed to export Excel file');
+        }
+    };
+
     const schedulePickupWithDelhivery = async () => {
         if (!selectedOrder) return;
         
@@ -873,8 +1052,30 @@ export default function StoreOrders() {
                             className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg text-sm"
                         />
                     </div>
-                    <div className="sm:col-span-2 flex items-end">
-                        <div className="text-xs text-slate-500">Showing orders by date range</div>
+                    <div>
+                        <label className="text-xs text-slate-500">Export Type</label>
+                        <select
+                            value={exportTypeFilter}
+                            onChange={(e) => setExportTypeFilter(e.target.value)}
+                            className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white"
+                        >
+                            <option value="ALL">All</option>
+                            <option value="CANCELLED">Cancelled</option>
+                            <option value="PAID">Paid</option>
+                            <option value="COD">COD</option>
+                        </select>
+                    </div>
+                    <div className="flex items-end">
+                        <div className="w-full flex items-center justify-between gap-3">
+                            <div className="text-xs text-slate-500">Select date and export option before downloading</div>
+                            <button
+                                onClick={exportOrdersToExcel}
+                                className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white text-xs font-semibold transition"
+                            >
+                                <Download size={14} />
+                                Export Excel
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>

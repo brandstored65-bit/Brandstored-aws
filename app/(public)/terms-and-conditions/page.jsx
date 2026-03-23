@@ -4,7 +4,7 @@ export default function TermsAndConditions() {
       <h1 className="text-3xl font-bold mb-6">Terms & Conditions</h1>
 
       <p className="mb-6">
-        Welcome to <strong>QuickFynd.com</strong>, owned and operated by{" "}
+        Welcome to <strong>brandstored.com</strong>, owned and operated by{" "}
         <strong>Nilaas</strong>. By accessing or using our website, you agree to
         comply with the Terms & Conditions outlined below. Please read them
         carefully. If you do not agree with any part of these terms, you must stop
@@ -16,7 +16,7 @@ export default function TermsAndConditions() {
         1. General Information
       </h2>
       <p className="mb-4">
-        QuickFynd.com (“we”, “our”, “us”) is an online shopping platform operated
+        brandstored.com (“we”, “our”, “us”) is an online shopping platform operated
         by <strong>Nilaas</strong>, offering a wide range of products. By using
         this website, you confirm that you are at least <strong>18 years
         old</strong> or accessing the website under the supervision of a parent
@@ -46,7 +46,7 @@ export default function TermsAndConditions() {
       <p className="mb-4">
         We make reasonable efforts to ensure that product descriptions, images,
         pricing, and other details are accurate. However, minor variations or
-        errors may occur. QuickFynd.com reserves the right to correct any
+        errors may occur. brandstored.com reserves the right to correct any
         inaccuracies without prior notice.
       </p>
 
@@ -91,7 +91,7 @@ export default function TermsAndConditions() {
       <ul className="list-disc ml-6 mb-4">
         <li>Delivery timelines provided are estimates and may vary by location.</li>
         <li>
-          QuickFynd.com is not responsible for delays caused by logistics
+          brandstored.com is not responsible for delays caused by logistics
           partners, weather conditions, or unforeseen circumstances.
         </li>
         <li>
@@ -129,7 +129,7 @@ export default function TermsAndConditions() {
         9. Intellectual Property
       </h2>
       <p className="mb-4">
-        All content on QuickFynd.com, including text, images, logos, designs, and
+        All content on brandstored.com, including text, images, logos, designs, and
         graphics, is the property of <strong>QuickFynd / Nilaas</strong> and is
         protected under applicable intellectual property laws.
       </p>
@@ -139,7 +139,7 @@ export default function TermsAndConditions() {
         10. Limitation of Liability
       </h2>
       <p className="mb-4">
-        QuickFynd.com and Nilaas shall not be liable for any indirect, incidental,
+        brandstored.com and Nilaas shall not be liable for any indirect, incidental,
         or consequential damages arising from the use of this website or its
         products.
       </p>
@@ -174,10 +174,10 @@ export default function TermsAndConditions() {
 
       <p className="font-semibold">Business Name: Nilaas</p>
       <p className="font-semibold">
-        Website: https://www.quickfynd.com
+        Website: https://www.brandstored.com
       </p>
       <p className="font-semibold">
-        Email: support@quickfynd.com
+        Email: support@brandstored.com
       </p>
       <p className="font-semibold mb-10">
         Customer Support: +91 7592875212

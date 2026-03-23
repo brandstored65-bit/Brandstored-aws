@@ -217,8 +217,8 @@ export default function HelpPage() {
               <div className="text-4xl mb-3">📧</div>
               <h3 className="font-bold text-slate-800 mb-2">Email Support</h3>
               <p className="text-slate-600 mb-4">Get help within 24 hours</p>
-              <a href="mailto:support@QuickFynd.com" className="text-blue-600 hover:underline font-medium">
-                support@QuickFynd.com
+              <a href="mailto:support@brandstored.com" className="text-blue-600 hover:underline font-medium">
+                support@brandstored.com
               </a>
             </div>
             <div>

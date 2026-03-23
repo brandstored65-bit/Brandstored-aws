@@ -145,7 +145,7 @@ export default function EmailTemplatesPreview() {
                       </div>
                       <div>
                         <p className="font-semibold text-gray-900">QuickFynd</p>
-                        <p className="text-xs text-gray-600">marketing@quickfynd.com</p>
+                        <p className="text-xs text-gray-600">marketing@brandstored.com</p>
                       </div>
                     </div>
                     <h3 className="font-semibold text-gray-900">

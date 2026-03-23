@@ -652,7 +652,7 @@ const ProductDetails = ({ product, reviews = [], hideTitle = false, offerData = 
     <div className="bg-gray-50">
       {/* Breadcrumb */}
       <div className="bg-white border-b border-gray-200">
-        <div className="max-w-[1450px] mx-auto px-4 sm:px-6 lg:px-8 py-3">
+        <div className="w-full md:max-w-[1450px] md:mx-auto px-4 sm:px-6 lg:px-8 py-3">
           <div className="flex items-center gap-2 text-sm">
             <a href="/" className="text-gray-600 hover:text-gray-900">Home</a>
             <span className="text-gray-400">&gt;</span>
@@ -663,7 +663,7 @@ const ProductDetails = ({ product, reviews = [], hideTitle = false, offerData = 
         </div>
       </div>
 
-      <div className="max-w-[1450px] mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-8">
+      <div className="w-full md:max-w-[1450px] md:mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 lg:gap-8 items-start">
           
           {/* LEFT: Image Gallery */}
@@ -1448,7 +1448,7 @@ const ProductDetails = ({ product, reviews = [], hideTitle = false, offerData = 
 
       {/* Frequently Bought Together Section */}
       {fbtEnabled && fbtProducts.length > 0 && (
-        <div className="max-w-[1450px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="w-full md:max-w-[1450px] md:mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="bg-white rounded-lg border border-gray-200 p-6">
             <div className="flex items-center justify-between mb-6">
               <div>

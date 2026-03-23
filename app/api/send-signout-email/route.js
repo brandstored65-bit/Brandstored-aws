@@ -39,7 +39,7 @@ export async function POST(req) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'Quickfynd <noreply@quickfynd.com>',
+        from: 'Quickfynd <noreply@brandstored.com>',
         to: email,
         subject: 'You have been signed out - Quickfynd',
         html: `
@@ -107,7 +107,7 @@ export async function POST(req) {
               <p>Want to continue shopping? Sign back in to access your account:</p>
               
               <div style="text-align: center;">
-                <a href="${process.env.NEXT_PUBLIC_BASE_URL || 'https://quickfynd.com'}" class="button">
+                <a href="${process.env.NEXT_PUBLIC_BASE_URL || 'https://brandstored.com'}" class="button">
                   Sign In Again
                 </a>
               </div>
@@ -118,8 +118,8 @@ export async function POST(req) {
               <strong>The Quickfynd Team</strong></p>
             </div>
             <div class="footer">
-              <p>This is an automated message from Quickfynd.com</p>
-              <p>Need help? Contact us at support@quickfynd.com</p>
+              <p>This is an automated message from brandstored.com</p>
+              <p>Need help? Contact us at support@brandstored.com</p>
             </div>
           </body>
           </html>

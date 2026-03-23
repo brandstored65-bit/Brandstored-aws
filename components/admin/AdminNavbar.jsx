@@ -1,7 +1,7 @@
 'use client'
 import Link from "next/link"
 import Image from "next/image";
-import Logo from "../../assets/Asset11.png";
+import Logo from "../../assets/logo/logo3.png";
 
 
 import { auth } from "@/lib/firebase";

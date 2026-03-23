@@ -79,10 +79,10 @@ const ProductDescription = ({ product, reviews = [], loadingReviews = false, onR
     // Remove fetchReviews and handleReviewAdded, use parent handler
 
     return (
-        <div className="my-4 sm:my-8">
+        <div className="my-4 sm:my-8 -mx-0 md:mx-0">
 
             {/* Product Description Section */}
-            <div className="bg-white border border-gray-200 mb-4 sm:mb-6">
+            <div className="bg-white border-0 md:border md:border-gray-200 mb-4 sm:mb-6">
                 <div className="border-b border-gray-200 px-4 sm:px-6 py-3 sm:py-4">
                     <h2 className="text-lg sm:text-xl font-bold text-gray-900">Product Description</h2>
                 </div>
@@ -124,7 +124,7 @@ const ProductDescription = ({ product, reviews = [], loadingReviews = false, onR
             </div>
 
             {/* Reviews Section */}
-            <div id="reviews" className="bg-white border border-gray-200 mt-4 sm:mt-6">
+            <div id="reviews" className="bg-white border-0 md:border md:border-gray-200 mt-4 sm:mt-6">
                 <div className="border-b border-gray-200 px-4 sm:px-6 py-3 sm:py-4">
                     <h2 className="text-lg sm:text-xl font-bold text-gray-900">Reviews</h2>
                 </div>
@@ -293,7 +293,7 @@ const ProductDescription = ({ product, reviews = [], loadingReviews = false, onR
 
             {/* Suggested Products Section */}
             {suggestedProducts.length > 0 && (
-                <div className="bg-white border border-gray-200 mt-6">
+                <div className="bg-white border-0 md:border md:border-gray-200 mt-6">
                     <div className="border-b border-gray-200 px-6 py-4 flex items-center justify-between">
                         <h2 className="text-xl font-bold text-gray-900">You May Also Like</h2>
                         {product.category && (
